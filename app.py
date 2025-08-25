@@ -99,6 +99,32 @@ else:
         submitted = st.form_submit_button("Tambah")
         if submitted and new_task_desc:
             user_id = get_user_id()
+            
+# Form untuk menambah tugas baru
+with st.form("new_task_form", clear_on_submit=True):
+    new_task_desc = st.text_input("➕ Tambah tugas baru:", placeholder="Contoh: Belajar Supabase")
+    submitted = st.form_submit_button("Tambah")
+    if submitted and new_task_desc:
+        user_id = get_user_id()
+
+        # --- TAMBAHKAN BARIS DEBUG INI ---
+        st.info(f"DEBUG: Mencoba menambah tugas untuk user_id: {user_id}")
+        # --------------------------------
+
+        if user_id:
+            try:
+                supabase.table("tasks").insert({
+                    "description": new_task_desc,
+                    "user_id": user_id
+                }).execute()
+                st.toast("Tugas berhasil ditambahkan!")
+                st.rerun() # Tambahkan rerun untuk refresh instan
+            except Exception as e:
+                st.error(f"Gagal menambah tugas: {e}")
+        else:
+            st.error("DEBUG: Gagal mendapatkan user_id. Sesi mungkin tidak valid.")
+
+            
             if user_id:
                 try:
                     supabase.table("tasks").insert({
@@ -142,3 +168,4 @@ else:
 
         except Exception as e:
             st.error(f"Gagal mengambil data tugas: {e}")
+
